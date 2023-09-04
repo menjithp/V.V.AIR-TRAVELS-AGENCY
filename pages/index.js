@@ -24,7 +24,8 @@ export default function Home() {
          month for migration and work visas.Over 50% of our customers are through word-of-mouth. No other company understands
           overseas careers like we do. " />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/logo.jpg" />
+        <meta name="google-site-verification" content="UVp6LuySmfW0RCaIY_5j66CEhv1JtuzQDgPGP8bvlBw" />
+            <link rel="icon" href="/logo.jpg" />
       </Head>
       <main><App /></main>
     </>
