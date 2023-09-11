@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const GeneralSchema = new Schema(
   {
-    companyName:String,
+    Name:String,
 companyQuote:String,
 companyDesc:String,
 Instagram:String,
@@ -12,7 +12,7 @@ Whatsapp:String,
 Mobile:String,
 Address:String,
 AgentName:String,
-mapName:String
+image:String,
 },
   {
     timestamps: true,

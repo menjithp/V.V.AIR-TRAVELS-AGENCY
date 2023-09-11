@@ -13,19 +13,17 @@ export default function Home(props) {
 
   const{state,dispatch}=useContext(Context)
   
-
-  console.log("billa ranga basa",props)
-
-  useEffect(()=>{
-    if(props){
-      dispatch({type:"INITIAL_STATE",data:props})
-    }
-  },[])
+  // useEffect(()=>{
+  //   if(props){
+  //     dispatch({type:"INITIAL_STATE",data:props})
+  //   }
+  // },[])
 
 
   return (
-    <App />
-  )
+      <App /> 
+     //<></>
+      )
 }
 
 // export async function getStaticProps({ params }) {
@@ -37,30 +35,3 @@ export default function Home(props) {
 //   }
 // }
 
-
-export const a=async()=>{
-
-  let url=process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
-  let general=await fetch(`${url}/api/general`);
-  general= await general.json()
-  general=general.res[0]
-
-  let country=await fetch(`${url}/api/country`)
-  country=await country.json()
-  country=country.res
-
-  let snapshot=await fetch(`${url}/api/snapshot`)
-  snapshot=await snapshot.json();
-  snapshot=snapshot.res
-
-  let jobs=await fetch(`${url}/api/jobs`)
-  jobs=await jobs.json();
-  jobs=jobs.res
-
-
-
-  return {general,jobs,snapshot,country}
-
-
-  //dispatch({type:"INITIAL_STATE",data:state})
-}

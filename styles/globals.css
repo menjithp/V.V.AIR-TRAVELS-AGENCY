@@ -39,7 +39,9 @@
   --card-rgb: 180, 185, 188;
   --card-border-rgb: 131, 134, 135;
 
-  --violet-color:#401b9c
+  --violet-color:#401b9c;
+  --blue-color:rgb(135,206,250,0.6);
+  --udemy-color:rgb(64, 27, 156);;
 }
 
 

@@ -1,6 +1,6 @@
 {
     "_id": "64f85ee382a6d8a3458c9ef6",
-    "companyName": "V.V.AIR TRAVELS",
+    "Name": "V.V.AIR TRAVELS",
     "companyQuote": "India's Best Immigration Consultant",
     "companyDesc": "V.V.Air Travels is India’s Best Overseas Career Consultant and largest B2C immigration firm. Established in 2020, We are Licensed Recruitment Agents in India . As part of our services, we provide personal one-on-one counseling to about 100+ individual inquiries every month for migration and work visas.Over 50% of our customers are through word-of-mouth. No other company understands overseas careers like we do.",
     "Instagram": "",
@@ -10,7 +10,7 @@
     "Mobile": "8270709279",
     "Address": "4/73, Kanambilpalayam, Kollangkadu, Elachipalayam (POST), Tiruchengode(TK), Namakkal(DT)-637202",
     "AgentName": "Menjith P",
-    "mapName": "office_map.jpg",
+    "image": "http://localhost:3000/media/general/V.V.AIR%20TRAVELS.jpg",
     "createdAt": "2023-09-06T11:13:39.358Z",
     "updatedAt": "2023-09-06T11:13:39.358Z",
     "__v": 0

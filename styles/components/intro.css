@@ -5,7 +5,7 @@
     background-size:cover;
 }
 .backdrop-hero{
-    background-color: rgb(135,206,250,0.6)
+    background-color: var(--blue-color)
     /* z-index: auto; */
 }
 .z-index-2{

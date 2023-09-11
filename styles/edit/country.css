@@ -1,0 +1,12 @@
+.one-country-edit{
+
+    border:1px solid var(--violet-color)
+}
+.one-country-edit label{
+    padding:0;
+    display: block;
+    padding: 5px;
+}
+.country-inside li{
+margin:10px 0px;
+}

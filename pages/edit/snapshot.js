@@ -1,6 +1,9 @@
 import {useContext,useState,useRef,useEffect} from 'react'
 import {Context} from '../App'
-import {AiFillDelete,AiFillPlusCircle} from 'react-icons/ai'
+import {AiFillDelete} from 'react-icons/ai'
+import {FaSave} from 'react-icons/fa'
+import HeaderEdit from './headerEdit'
+
 
 export default ()=>{
 
@@ -8,8 +11,6 @@ export default ()=>{
 
 const {state,dispatch}=useContext(Context)
  const [snapshot,setsnapshot]=useState([])
- const[changedObjects,setchangedObjects]=useState({})
-const[deletedObjects,setdeletedObjects]=useState([])
 
  useEffect(()=>{
      let a=state.snapshot.filter(item=>item.type==="Impact").concat(state.snapshot.filter(item=>item.type==="Office"))
@@ -18,73 +19,89 @@ const[deletedObjects,setdeletedObjects]=useState([])
  },[state])
 
  const Add_new_snapshot=(e)=>{
-    setsnapshot([...snapshot,{Name:"",value:"",type:""}])
+    setsnapshot([{Name:"",value:"",type:""},...snapshot])
 }
 
 const eventhandler=(e,item,index)=>{
     let obj=[...snapshot]
-
     obj[index][e.target.name]=e.target.value
-    
     setsnapshot(obj)
-
-    if (item._id){
-        let temp={...changedObjects}
-        temp[item._id]=item
-        setchangedObjects(temp)
-    }
-    
-    
 }
 const handledelete=async(e,item)=>{
         if(item._id){
-            let temp=[...deletedObjects]
-            temp.push(item)
-            setdeletedObjects(temp)
+            dispatch({type:"loading"})
+            try{
+                fetch(`/api/edit/snapshot?id=${item._id}`,{method:"DELETE"}).then(res=>{
+                   if (res.status===200)return res.json()
+                   throw new Error(res.json().message)
+                }).then(res=>{
+                   dispatch({type:"DELETE_DATA",data:{_id:item._id,section:"snapshot"}})
+                   dispatch({type:"loading"})
+                   dispatch({type:'toastgreen',data:"Data Deleted successfully"})
+                })
+            }catch(e){
+                dispatch({type:"loading"})
+                dispatch({type:'toastred',data:e.message})
+            }
+        }else{
+            setsnapshot(snapshot.filter(one_country=>JSON.stringify(one_country)!==JSON.stringify(item)))
         }
-
-        setsnapshot(snapshot.filter(one_country=>JSON.stringify(one_country)!==JSON.stringify(item)))
 }
-const save=async(e)=>{
+const handleupload=async(e,item)=>{
 
-        let changedObjects1=Object.values(changedObjects).filter(item=>!deletedObjects.map(item1=>item1._id).includes(item._id))
-        changedObjects1.push(...snapshot.filter(one_country=>!one_country._id))
-        let response=await fetch('/api/snapshot',{method:"PUT",body:JSON.stringify(changedObjects1)})
-        response=await response.json()
-        console.log("response",response)
+        const form=new FormData();
+        form.append("Snapshot",JSON.stringify(item))
 
-        console.log("changedObjects",changedObjects1)
-        let deleting_ids=deletedObjects.map(item=>item._id)
-        response=await  fetch('/api/snapshot',{method:"DELETE",body:JSON.stringify(deleting_ids)})
-        response=await response.json()
-        console.log("response",response)
+        dispatch({type:"loading"})
+        try{
+            fetch('/api/edit/snapshot',{method:"POST",body:form}).then(res=>{
+               if (res.status===200)return res.json()
+               throw new Error(res.json().message)
+            }).then(res=>{
+
+                console.log("result en of world",res.res)
+               dispatch({type:"INSERT_DATA",data:{data:res.res,section:"snapshot"}})
+               dispatch({type:"loading"})
+               dispatch({type:'toastgreen',data:"Data updated successfully"})
+            })
+        }catch(e){
+            dispatch({type:"loading"})
+            dispatch({type:'toastred',data:e.message})
+        }
 }
 
  console.log(snapshot)
-    return <section className="impact-edit p-5">
-        <div className="d-flex position-fixed top-0 start-0 w-100 align-items-center bg-light">
-        <h5 className="text-center flex-grow-1">Snapshot Edit</h5>
-        <button onClick={Add_new_snapshot} className="me-4" style={{border:"none",background:"none",alignSelf:"flex-end"}}>
-            <AiFillPlusCircle size={20}/>
-        </button>
-        </div>
+    return <section className="impact-edit edit-body p-5">
+        <HeaderEdit title="Snapshot Edit" right_function={Add_new_snapshot} />
         <ul className="p-5 d-flex flex-column gap-2">
         {
             snapshot.map((item,index)=>{
-               return <li key={index} className="d-flex gap-3">
-                    <span>Name: <input type="text" name="Name" value={item.Name} onChange={(e)=>eventhandler(e,item,index)}/></span>
-                    <span>Value: <input type="text" name="value" value={item.value} onChange={(e)=>eventhandler(e,item,index)}/></span>
-                    <span>Select Snapshot type: <select  name="type" value={item.type} onChange={(e)=>eventhandler(e,item,index)}>
+               return <li key={index}>
+                   <form className="one-snapshot-edit p-2 d-md-flex gap-3" onSubmit={(e)=>{e.preventDefault();handleupload(e,item)}}>
+                   <div>
+                       <label>Name: </label>
+                       <input required type="text" name="Name" value={item.Name} onChange={(e)=>eventhandler(e,item,index)}/>
+                   </div>
+                   <div>
+                       <label>Value: </label>
+                       <input type="text" name="value" value={item.value} onChange={(e)=>eventhandler(e,item,index)}/>
+                    </div>
+                    <div>
+                       <label>Select Snapshot type: </label>
+                       <select required name="type" value={item.type} onChange={(e)=>eventhandler(e,item,index)}>
                             <option disabled value="">please select snapshot type</option>
                             <option  value="Impact">Impact</option>
                             <option  value="Office">Office</option>
                         </select>
-                    </span> 
+                    </div>
+                    <div style={{justifySelf:"flex-end"}} className="d-flex gap-4">
+                        <button onClick={(e)=>handledelete(e,item)} style={{border:"none",background:"transparent"}}><AiFillDelete size={20} /></button>
+                        <button type="submit" style={{border:"none",background:"transparent"}}><FaSave size={20} /></button>
+                    </div>
+                    </form>
                 </li>
             })
         }
     </ul>
-   
-    <button onClick={save}>Save All</button>
     </section>
 }

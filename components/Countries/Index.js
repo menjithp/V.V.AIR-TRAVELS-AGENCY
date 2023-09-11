@@ -19,7 +19,7 @@ export default ()=>{
        { country.length && country.map((item,index)=> <li key={index} className="one-country">
 
 <div className="vflex-left">
-   <div className="icon-hold w-100"><img src={`/media/country/${item.image}`} alt=""/></div>
+   <div className="icon-hold w-100"><img src={item.image} alt=""/></div>
    <div className="details-country">
          <h5 className="country-title">{item.Name}</h5>
          {item.Comments.map((item2,index2)=> 

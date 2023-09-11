@@ -1,3 +1,5 @@
+
+//componenets css
 import '@/styles/globals.css'
 import '@/styles/App.css'
 import '@/styles/components/country.css'
@@ -12,10 +14,27 @@ import '@/styles/components/map.css'
 import '@/styles/components/contact-point.css'
 import '@/styles/components/address.css'
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import Head from 'next/head'
 
-import {a} from './index'
+// edit css imports
+import '@/styles/edit/general.css'
+import '@/styles/edit/country.css'
+import '@/styles/edit/jobs.css'
+import '@/styles/edit/snapshot.css'
+import '@/styles/edit/common.css'
+
+// admin css imports
+import '@/styles/admin/admin.css'
+import '@/styles/admin/login.css'
+
+//bootstrap css imports
+import "bootstrap/dist/css/bootstrap.min.css";
+
+//import Loader
+import Loader from '@/Basic-components/loader'
+import Toast from '@/Basic-components/toast'
+
+import Head from 'next/Head'
+
 
 const initialstate={
   general:{
@@ -33,7 +52,10 @@ const initialstate={
     },
     country:[],
     snapshot:[],
-    jobs:[]
+    jobs:[],
+    loading:false,
+    toast:{message:"",background:"",show:false},
+
 }
 import {Context} from './App'
 import { useEffect,useReducer } from 'react'
@@ -43,14 +65,13 @@ export default function App({ Component, pageProps,data }) {
   const [state,dispatch]=useReducer(reducer,initialstate)
 
   
-console.log("initial-props",data)
   useEffect(()=>{
     import ("bootstrap/dist/js/bootstrap.min.js");
     dispatch({type:"INITIAL_STATE",data:data})
 
   },[])
 
-  console.log("srk",state.country)
+  
   return<>
      <Head>
       <title>V.V.AIR TRAVELS | Foreign Job Consultancy | India's Best Immigration Agency</title>
@@ -64,7 +85,8 @@ console.log("initial-props",data)
       </Head>
   
   <Context.Provider value={{state,dispatch}}>
-   
+  {state?.loading && <Loader />}
+  <Toast/>
     <Component {...pageProps} />
     
     </Context.Provider> 
@@ -74,22 +96,39 @@ console.log("initial-props",data)
 const reducer=(state,action)=>{
 
   switch (action.type) {
-    case "ADD_NEW_COUNTRY":
-      let draft={...state}
-      draft.country.push({
-        "Name":"",
-        "Comments":[],
-        "image":"",
-    })
-
-    console.log("draft",draft)
-
-    return draft
   case "INITIAL_STATE":
-    return action.data
-     
-      
+    return {...state,...action.data}
+  case "SET_GENERAL_DATA":
+    return {...state,general:action.data}
+  case "INSERT_DATA":
+          if(action.data.section==="jobs"){
+            return {...state,jobs:[action.data.data,...state.jobs]}
+          }else if(action.data.section==="country"){
+            debugger
+            return {...state,country:[action.data.data,...state.country]}
+          }else if(action.data.section==="snapshot"){
+            debugger
+            return {...state,snapshot:[action.data.data,...state.snapshot]}
+           
+          }  
+  case "DELETE_DATA":
+          if(action.data.section==="jobs"){
+            debugger
+            return {...state,jobs:state.jobs.filter(item=>item._id!==action.data._id)}
+          }else if(action.data.section==="country"){
+            debugger
+            return {...state,country:state.country.filter(item=>item._id!==action.data._id)}
+          }else if(action.data.section==="snapshot"){
+            return {...state,snapshot:state.snapshot.filter(item=>item._id!==action.data._id)}
+          }
+  case "loading":
+    return {...state,loading:!state.loading}
+  case "toastred":
+    return {...state,toast:{message:action.data,show:!state.toast.show,background:"red"}}
+  case "toastgreen":
+    return {...state,toast:{message:action.data,show:!state.toast.show,background:"green"}}
   }
+  return state
 }
 
 
@@ -97,4 +136,29 @@ App.getInitialProps=async()=>{
   let data=await a();
 
   return {data};
+}
+
+
+export const a=async()=>{
+
+  let url=process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+ let general=await fetch(`${url}/api/edit/general`);
+ general= await general.json()
+ general=general.res[0]
+
+ let country=await fetch(`${url}/api/edit/country`)
+ country=await country.json()
+ country=country.res
+
+ let snapshot=await fetch(`${url}/api/edit/snapshot`)
+ snapshot=await snapshot.json();
+ snapshot=snapshot.res
+
+ let jobs=await fetch(`${url}/api/edit/jobs`)
+ jobs=await jobs.json();
+ jobs=jobs.res
+
+
+ return {general,jobs,snapshot,country}
+
 }

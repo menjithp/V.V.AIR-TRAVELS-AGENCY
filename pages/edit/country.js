@@ -1,87 +1,137 @@
+"use client"
 import {useContext,useState,useRef,useEffect} from 'react'
 import {Context} from '../App'
-import {AiFillDelete,AiFillPlusCircle} from 'react-icons/ai'
-import {GrEdit} from 'react-icons/gr'
-import {BsFillCloudUploadFill} from 'react-icons/bs'
+import {AiFillDelete} from 'react-icons/ai'
+import {FaSave} from 'react-icons/fa'
+import HeaderEdit from './headerEdit'
 
 
 
 export default ()=>{
-
     const {state,dispatch}=useContext(Context)
     const[country,setCountry]=useState(state.country)
-    const[changedObjects,setchangedObjects]=useState({})
-    const[deletedObjects,setdeletedObjects]=useState([])
+    const imageref=useRef()
 
     useEffect(()=>{
         setCountry(state.country)
     },[state])
 
-    const eventhandler=(e,item,index)=>{
+    const eventhandler=(e,index)=>{
             let obj=[...country]
 
-            if(e.target.name!=="Comments")obj[index][e.target.name]=e.target.value
-            else obj[index][e.target.name]=e.target.value.split(",")
-            
-            setCountry(obj)
 
-            if (item._id){
-                let temp={...changedObjects}
-                temp[item._id]=item
-                setchangedObjects(temp)
+            if(e.target.name==="image"){
+                obj[index]["imagedata"]=e.target.files[0]
+                obj[index][e.target.name]=URL.createObjectURL(e.target.files[0])
+                console.log("country",obj)
             }
-            
+            else if(e.target.name==="Comments"){
+                obj[index][e.target.name]=e.target.value.split("\n")
+            }
+            else obj[index][e.target.name]=e.target.value
+          
+            setCountry(obj)
             
     }
     const handledelete=async(e,item)=>{
-        if(item._id){
-            let temp=[...deletedObjects]
-            temp.push(item)
-             setdeletedObjects(temp)
+        e.preventDefault()
+
+       if(item._id){
+        dispatch({type:"loading"})
+        try{
+            fetch(`/api/edit/country?id=${item._id}`,{method:"DELETE"}).then(res=>{
+               if (res.status===200)return res.json()
+               throw new Error(res.json().message)
+            }).then(res=>{
+               dispatch({type:"DELETE_DATA",data:{_id:item._id,section:"country"}})
+               dispatch({type:"loading"})
+               dispatch({type:'toastgreen',data:"Data Deleted successfully"})
+            })
+        }catch(e){
+            dispatch({type:"loading"})
+            dispatch({type:'toastred',data:e.message})
         }
-     
-       setCountry(country.filter(one_country=>JSON.stringify(one_country)!==JSON.stringify(item)))
+    }
+    else{
+        setCountry(country.filter(one_country=>JSON.stringify(one_country)!==JSON.stringify(item)))
+
     }
 
-    const save=async(e)=>{
 
-        let changedObjects1=Object.values(changedObjects).filter(item=>!deletedObjects.map(item1=>item1._id).includes(item._id))
-        changedObjects1.push(...country.filter(one_country=>!one_country._id))
-        let response=await fetch('/api/country',{method:"PUT",body:JSON.stringify(changedObjects1)})
-       response=await response.json()
-       console.log("response",response)
-
-       console.log("changedObjects",changedObjects1)
-       let deleting_ids=deletedObjects.map(item=>item._id)
-         response=await  fetch('/api/country',{method:"DELETE",body:JSON.stringify(deleting_ids)})
-        response=await response.json()
-        console.log("response",response)
     }
 
-    return <section className="country-edit-section">
-        <div className="d-flex position-fixed top-0 start-0 w-100 align-items-center bg-light">
-        <h5 className="text-center flex-grow-1">Country Edit</h5>
-        <button onClick={()=>{
-            dispatch({type:"ADD_NEW_COUNTRY"})
-            }} className="me-4" style={{border:"none",background:"none",alignSelf:"flex-end"}}>
-            <AiFillPlusCircle size={20}/>
-        </button>
-        </div>
+    const Add_new_country=(e)=>{
+        setCountry([{Name:"",image:"",Comments:[]},...country])
+    }
+  
+    const handleupload=async(e,item)=>{
+        e.preventDefault()
+        const form=new FormData();
+        form.append("Country",JSON.stringify(item))
+        if (item["imagedata"])form.append("Country",item["imagedata"])
+
+        dispatch({type:"loading"})
+        try{
+            fetch('/api/edit/country',{method:"POST",body:form}).then(res=>{
+               if (res.status===200)return res.json()
+               throw new Error(res.json().message)
+            }).then(res=>{
+               dispatch({type:"INSERT_DATA",data:{data:res.res,section:"country"}})
+               dispatch({type:"loading"})
+               dispatch({type:'toastgreen',data:"Data updated successfully"})
+            })
+        }catch(e){
+            dispatch({type:"loading"})
+            dispatch({type:'toastred',data:e.message})
+        }
+   
+    }
+
+    return <section className="country-edit-section edit-body">
+        <HeaderEdit title="Country Edit" right_function={Add_new_country} />
         
-    <ul className="p-5 d-flex flex-column gap-5">
+    <ul className="p-5 mt-2">
           { country.length && country.map((item,index)=>
-        <li className="d-md-flex align-items-center gap-4" key={index}>
-      <span> Country Name: <input type="text" name="Name" value={item.Name} onChange={(e)=>eventhandler(e,item,index)}/></span>
-      <span className="flex-grow-1">Country Comments: <textarea value={item.Comments.join(",")} onChange={(e)=>eventhandler(e,item,index)} type="text" name="Comments" style={{width:"100%"}} /></span>
-      <span>Image<input type="file" name="image" onChange={(e)=>eventhandler(e,item,index)}></input></span>
-      <span>country Image: <img  style={{width:"100px",width:"100px"}} name="image" src={`/media/country/${item.image}`} /></span>
-      <span className="d-flex gap-2">
-          <button onClick={(e)=>handledelete(e,item)} style={{border:"none",background:"transparent"}}><AiFillDelete size={20} /></button>
-          {/* <button style={{border:"none",background:"transparent"}}><GrEdit size={20}/></button> */}
-          {/* <button style={{border:"none",background:"transparent"}}><BsFillCloudUploadFill size={20} /></button> */}
-      </span>
+        <li className="position-relative one-country-edit my-2" key={index}>
+            <form className="p-2" onSubmit={(e)=>e.preventDefault()}>
+                <ul className="country-inside">
+                    <li className="row">
+                        <div className="col-6">
+                            <label>Country Name: </label>
+                            <input type="text" name="Name" value={item.Name} onChange={(e)=>eventhandler(e,index)}/>
+                        </div>
+                        <div className="col-6">
+                            <label>Upload new Image: </label>
+                            <input type="file" name="image" onChange={(e)=>{
+                                imageref.current.src=URL.createObjectURL(e.target.files[0])
+                                eventhandler(e,index)
+                                }}></input>
+                        </div>
+                    </li>
+                    <li className="row">
+                        <div className="col-6">
+                            <label>Country Comments: </label>
+                            <textarea  style={{width:"100%"}}type="text" name="Comments" value={item.Comments.join("\n")}
+                             onChange={(e)=>eventhandler(e,index)}/>
+                        </div>
+                        <div className="col-6">
+                            <label>Uploaded Image: </label>
+                            <div style={{height:"100px",width:"100px"}}>
+                                <img ref={imageref} style={{height:"100%",width:"100%",objectFit:"contain"}} name="image" src={item.image} alt="upload country image" />                              
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+                <span className=" position-absolute end-0 d-flex gap-2 top-0">
+                    <button onClick={(e)=>handledelete(e,item)} style={{border:"none",background:"transparent"}}><AiFillDelete size={20} /></button>
+                    <button onClick={(e)=>handleupload(e,item)} style={{border:"none",background:"transparent"}}><FaSave size={20} /></button>
+
+                </span>
+
+            </form>
+    
        </li>  )}
     </ul>
-    <button onClick={save}>Save All</button>
     </section>
 }
