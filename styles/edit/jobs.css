@@ -1,0 +1,7 @@
+.edit-jobs label{
+display: block;
+padding:10px;
+}
+.one-job{
+    border:1px solid var(--violet-color)
+}
