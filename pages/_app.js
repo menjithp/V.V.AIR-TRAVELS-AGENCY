@@ -33,7 +33,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Loader from '@/Basic-components/loader'
 import Toast from '@/Basic-components/toast'
 
-import Head from 'next/Head'
+import Head from 'next/head'
 
 
 const initialstate={
