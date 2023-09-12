@@ -90,7 +90,14 @@ export default async function handler(request, response) {
       let oldpath = formfile.filepath;
       newfilename = formdata.Name + path.extname(formfile.originalFilename);
       newpath = path.join(working_dir, newfilename);
+      
+ console.log("newfilename",newfilename)
+      console.log("oldpath",oldpath)
+      console.log("newpath",newpath)
+      
       const removedfile = removefile_if_exists(newpath);
+       console.log("removedfile",removedfile)
+      
       if (typeof removedfile !== "string")
         return response
           .status(500)
@@ -100,7 +107,10 @@ export default async function handler(request, response) {
             res: {},
           });
       const movedfile = movefile(oldpath, newpath);
-      if (typeof removedfile !== "string")
+
+      console.log("movedfile",movedfile)
+      
+      if (typeof movedfile !== "string")
       return response
         .status(500)
         .json({
@@ -119,9 +129,9 @@ export default async function handler(request, response) {
       dynamic_path =
       image_path+newfilename
         //newpath_url.split(cwd_url)[1].replace("/public", "");
-        const img = fs.readFileSync(newpath);
+       // const img = fs.readFileSync(newpath);
 
-        console.log("singam style",Buffer.from(img).toString('base64'))
+       // console.log("singam style",Buffer.from(img).toString('base64'))
     }
  console.log("siruthai style")
     let data_to_database = { ...formdata };
