@@ -1,0 +1,19 @@
+.one-snapshot-edit{
+    border:1px solid var(--violet-color);
+}
+
+.one-snapshot-edit label{
+    padding:0;
+    display: block;
+    padding: 5px;
+}
+
+.one-snapshot-edit select{
+    width:fit-content !important
+}
+
+@media  screen and (max-width:768px) {
+    .one-snapshot-edit select{
+        max-width:100px !important
+    }
+}
