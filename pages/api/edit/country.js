@@ -59,7 +59,7 @@ export default async function handler(request, response) {
   else if (request.method === "POST" ||request.method === "PUT") {
     const form = await formread(request);
 
-    console.log("----------------------------mona")
+ 
     //check if form parsed successfully
     if (form.err) {
       return response
@@ -119,8 +119,11 @@ export default async function handler(request, response) {
       dynamic_path =
       image_path+newfilename
         //newpath_url.split(cwd_url)[1].replace("/public", "");
-    }
+        const img = fs.readFileSync(newpath);
 
+        console.log("singam style",Buffer.from(img).toString('base64'))
+    }
+ console.log("siruthai style")
     let data_to_database = { ...formdata };
     if (dynamic_path) data_to_database.image = dynamic_path;
 
