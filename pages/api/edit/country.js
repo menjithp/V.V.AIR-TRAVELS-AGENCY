@@ -11,7 +11,7 @@ import {
 const fs = require("fs");
 const path = require("path");
 
-const working_dir = path.join(process.cwd() + "/public/media/country");
+let working_dir = path.join(process.cwd() + "/public/media/country");
 const connection = await connectMongoDB();
 const image_path=process.env.NEXT_PUBLIC_API_URL+"/api/image/country-"
 
@@ -89,8 +89,10 @@ export default async function handler(request, response) {
           .json({ message: "directory creation failed", desc: dir, res: {} });
       let oldpath = formfile.filepath;
       newfilename = formdata.Name + path.extname(formfile.originalFilename);
-      newpath = path.join(working_dir, newfilename);
       
+      working_dir=process.cwd()
+      newpath = path.join(working_dir, "public",newfilename);
+    
  console.log("newfilename",newfilename)
       console.log("oldpath",oldpath)
       console.log("newpath",newpath)
