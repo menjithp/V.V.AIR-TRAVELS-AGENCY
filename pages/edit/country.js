@@ -74,10 +74,12 @@ export default ()=>{
         try{
             fetch('/api/edit/country',{method:"POST",body:form}).then(res=>{
                if (res.status===200)return res.json()
-               throw new Error(res.json().message)
+                else throw new Error(res.json())
             }).then(res=>{
+                
               if(!item._id) dispatch({type:"INSERT_DATA",data:{data:res.res,section:"country"}})
               else dispatch({type:"UPDATE_DATA",data:{data:res.res,section:"country",item}})
+              
                dispatch({type:"loading"})
                dispatch({type:'toastgreen',data:"Data updated successfully"})
             })
