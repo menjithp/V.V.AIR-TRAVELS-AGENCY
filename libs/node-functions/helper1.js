@@ -5,7 +5,9 @@ import {Formidable} from 'formidable'
 
 export function movefile(oldPath,newPath){
     try{
-        fs.renameSync(oldPath, newPath);
+      fs.copyFile(oldPath, newPath, function (err) {
+        if (err) throw new Error("File Copy Failed");
+    });
         return "success"
     }catch(e){
         return e
