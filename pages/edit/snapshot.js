@@ -45,23 +45,25 @@ const handledelete=async(e,item)=>{
                 dispatch({type:'toastred',data:e.message})
             }
         }else{
-            setsnapshot(snapshot.filter(one_country=>JSON.stringify(one_country)!==JSON.stringify(item)))
+            dispatch({type:"DELETE_DATA_TEMP",data:{_temp:item._temp,section:"snapshot"}})
         }
 }
 const handleupload=async(e,item)=>{
 
         const form=new FormData();
-        form.append("Snapshot",JSON.stringify(item))
+        let item_to_database={...item}
+        let {_temp,...rest}=item_to_database
+    console.log("item_to_database",item_to_database)
+        form.append("Snapshot",JSON.stringify(item_to_database))
 
-
-        dispatch({type:"INSERT_DATA",data:{data:{...item,_id:"temp"},section:"snapshot"}})
         dispatch({type:"loading"})
         try{
             fetch('/api/edit/snapshot',{method:"POST",body:form}).then(res=>{
                if (res.status===200)return res.json()
-               throw new Error(res.json())
+            
             }).then(res=>{
-              dispatch({type:"UPDATE_DATA",data:{data:res.res,section:"snapshot",item}})
+              if(item._id)dispatch({type:"UPDATE_DATA",data:{data:res.res,section:"snapshot",item}})
+              else if(item._temp)dispatch({type:"UPDATE_DATA_TEMP",data:{data:res.res,section:"snapshot",item}})
               dispatch({type:"loading"})
               dispatch({type:'toastgreen',data:"Data updated successfully"})
             })
@@ -73,11 +75,11 @@ const handleupload=async(e,item)=>{
 
  console.log(snapshot)
     return <Redirect><section className="impact-edit edit-body pt-4">
-        <HeaderEdit title="Snapshot Edit" right_function={Add_new_snapshot} />
+        <HeaderEdit title="Snapshot Edit" right_function={()=>dispatch({type:"INSERT_DATA",data:{Name:"",type:"",value:""},section:"snapshot"})} />
         <ul className="p-5 d-flex flex-column gap-2">
         {
             snapshot.map((item,index)=>{
-               return <li key={index}>
+               return <li key={item._id||item._temp}>
                    <form className="position-relative one-snapshot-edit p-2- row gap-3" onSubmit={(e)=>{e.preventDefault();handleupload(e,item)}}>
                   <div className="col-md row">
                         <div className="col">

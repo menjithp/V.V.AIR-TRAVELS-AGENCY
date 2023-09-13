@@ -37,7 +37,7 @@ import {SessionProvider} from 'next-auth/react'
 
 import Head from 'next/head'
 
-import binary_data from '../binary_file'
+import uid from '../Basic-components/uniqueid'
 
 const initialstate={
   general:{
@@ -61,7 +61,7 @@ const initialstate={
 
 }
 import {Context} from './App'
-import { useEffect,useReducer } from 'react'
+import { useEffect,useId,useReducer } from 'react'
 
 export default function App({ Component, pageProps,data }) {
 
@@ -107,14 +107,13 @@ const reducer=(state,action)=>{
   case "SET_GENERAL_DATA":
     return {...state,general:action.data}
   case "INSERT_DATA":
-          if(action.data.section==="jobs"){
-            return {...state,jobs:[action.data.data,...state.jobs]}
-          }else if(action.data.section==="country"){
-            debugger
-            return {...state,country:[action.data.data,...state.country]}
-          }else if(action.data.section==="snapshot"){
-            debugger
-            return {...state,snapshot:[action.data.data,...state.snapshot]}
+    debugger
+          if(action.section==="jobs"){
+            return {...state,jobs:[{...action.data,_temp:uid()},...state.jobs]}
+          }else if(action.section==="country"){
+            return {...state,country:[{...action.data,_temp:uid()},...state.country]}
+          }else if(action.section==="snapshot"){
+            return {...state,snapshot:[{...action.data,_temp:uid()},...state.snapshot]}
            
           }  
   case "DELETE_DATA":
@@ -125,35 +124,55 @@ const reducer=(state,action)=>{
           }else if(action.data.section==="snapshot"){
             return {...state,snapshot:state.snapshot.filter(item=>item._id!==action.data._id)}
           }
+  case "DELETE_DATA_TEMP":
+    debugger
+    if(action.data.section==="jobs"){
+      return {...state,jobs:state.jobs.filter(item=>item._temp!==action.data._temp)}
+    }else if(action.data.section==="country"){
+      return {...state,country:state.country.filter(item=>item._temp!==action.data._temp)}
+    }else if(action.data.section==="snapshot"){
+      return {...state,snapshot:state.snapshot.filter(item=>item._temp!==action.data._temp)}
+    }
   case "UPDATE_DATA":
     if(action.data.section==="jobs"){
       let particular_index=state.jobs.findIndex(item=>item._id===action.data.item._id)
-      let temp_index=state.jobs.findIndex(item=>item._id==="temp")
       let new_obj=state.jobs
       if(particular_index!==-1) new_obj[particular_index]=action.data.item
-      if(temp_index!==-1)new_obj[temp_index]=action.data.item
-     
       return {...state,jobs:new_obj}
     }else if(action.data.section==="country"){
 
-      let particular_index=state.country.find(item=>item._id===action.data.item._id)
-      let temp_index=state.jobs.findIndex(item=>item._id==="temp")
+      let particular_index=state.country.findIndex(item=>item._id===action.data.item._id)
       let new_obj=state.country
       if(particular_index!==-1) new_obj[particular_index]=action.data.item
-      if(temp_index!==-1)new_obj[temp_index]=action.data.item
-
       return {...state,country:new_obj}
 
     }else if(action.data.section==="snapshot"){
 
-      let particular_index=state.snapshot.find(item=>item._id===action.data.item._id)
-      let temp_index=state.jobs.findIndex(item=>item._id==="temp")
+      let particular_index=state.snapshot.findIndex(item=>item._id===action.data.item._id)
       let new_obj=state.snapshot
       if(particular_index!==-1) new_obj[particular_index]=action.data.item
-      if(temp_index!==-1)new_obj[temp_index]=action.data.item
-
       return {...state,snapshot:new_obj}
     }
+    case "UPDATE_DATA_TEMP":
+      if(action.data.section==="jobs"){
+        let particular_index=state.jobs.findIndex(item=>item._temp===action.data.item._temp)
+        let new_obj=state.jobs
+        if(particular_index!==-1) new_obj[particular_index]=action.data.item
+        return {...state,jobs:new_obj}
+      }else if(action.data.section==="country"){
+  
+        let particular_index=state.country.findIndex(item=>item._temp===action.data.item._temp)
+        let new_obj=state.country
+        if(particular_index!==-1) new_obj[particular_index]=action.data.item
+        return {...state,country:new_obj}
+  
+      }else if(action.data.section==="snapshot"){
+  
+        let particular_index=state.snapshot.findIndex(item=>item._temp===action.data.item._temp)
+        let new_obj=state.snapshot
+        if(particular_index!==-1) new_obj[particular_index]=action.data.item
+        return {...state,snapshot:new_obj}
+      }
   case "loading":
     return {...state,loading:!state.loading}
   case "toastred":

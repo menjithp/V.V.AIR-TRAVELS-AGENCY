@@ -55,7 +55,7 @@ console.log("state.general",state.general)
 
         if(e.target.name==="image"){
             setfile(e.target.files[0])
-            obj[e.target.name]=URL.createObjectURL(e.target.files[0])
+            if(e.target.files[0])obj[e.target.name]=URL.createObjectURL(e.target.files[0])
         }
         else obj[e.target.name]=e.target.value
       
