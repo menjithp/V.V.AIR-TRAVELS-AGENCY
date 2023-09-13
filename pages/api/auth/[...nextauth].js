@@ -3,7 +3,7 @@ import GoogleProvider from 'next-auth/providers/google'
 import { signIn } from 'next-auth/react'
 
 import connectMongoDB from "@/libs/mongodb";
-import Admin from "@/models/Admin";
+import Admin from "@/models/admin";
 
 const connection = await connectMongoDB();
 
