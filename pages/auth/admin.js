@@ -20,7 +20,7 @@ export default ()=>{
                <li className="fs-4 fw-bolder"> <Link href="/edit/snapshot">Snapshots</Link></li>
             </ul>
         </nav>
-        <Button onClick={()=>signOut()}>Sign Out</Button>
+        <Button className="mt-5" onClick={()=>signOut()}>Sign Out</Button>
     </section>
     </Redirect>
 }
