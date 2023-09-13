@@ -1,0 +1,27 @@
+[
+    {
+        "Name":"Clients",
+        "value":"100+",
+        "type":"Impact"
+    },
+    {
+        "Name":"Sucess Rate",
+        "value":"97%",
+        "type":"Impact"
+    },
+    {
+        "Name":"Positive Reviews",
+        "value":"100+",
+        "type":"Impact"
+    },
+    {
+        "Name":"Offices",
+        "value":1,
+        "type":"Office"
+    },
+    {
+        "Name":"Expertise",
+        "value":"5 Years",
+        "type":"Office"
+    }
+]

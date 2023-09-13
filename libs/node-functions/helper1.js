@@ -6,8 +6,7 @@ import {Formidable} from 'formidable'
 export function movefile(oldPath,newPath){
     try{
       fs.copyFile(oldPath, newPath, function (err) {
-          console.log("errrrrrrrrrrr",err)
-        if (err) throw new Error(err);
+        if (err) throw new Error("File Copy Failed");
     });
         return "success"
     }catch(e){
@@ -52,4 +51,26 @@ export async function formread(request){
       }) 
     })
     return data
+  }
+
+  export function toBase64(filePath) {
+    try{
+    const buffer = fs.readFileSync(filePath,(err)=>{
+      throw new Error(err)
+    });  
+    return buffer.toString('base64');
+  }catch(e){
+    return e
+  }
+  }
+
+  export function toBuffer(filePath) {
+    try{
+    const buffer = fs.readFileSync(filePath,(err)=>{
+      throw new Error(err)
+    });  
+    return buffer
+  }catch(e){
+    return e
+  }
   }

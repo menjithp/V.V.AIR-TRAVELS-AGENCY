@@ -3,6 +3,7 @@ import {Context} from '../App'
 import {AiFillDelete} from 'react-icons/ai'
 import {FaSave} from 'react-icons/fa'
 import HeaderEdit from './headerEdit'
+import Redirect from './redirect'
 
 
 export default ()=>{
@@ -57,12 +58,9 @@ const handleupload=async(e,item)=>{
 
         dispatch({type:"loading"})
         try{
-            fetch('/api/edit/jobs',{method:"POST",body:form}).then(res=>{
-               if (res.status===200)return res.json()
-               throw new Error(res.json().message)
-            }).then(res=>{
-                if(!item._id)  dispatch({type:"INSERT_DATA",data:{data:res.res,section:"jobs"}})
-                else dispatch({type:"UPDATE_DATA",data:{data:res.res,section:"jobs",item}})
+            fetch('/api/edit/jobs',{method:"POST",body:form}).then(res=>res.json()).then(res=>{
+
+               dispatch({type:"UPDATE_DATA",data:{data:res.res,section:"jobs",item}})
                dispatch({type:"loading"})
                dispatch({type:'toastgreen',data:"Data updated successfully"})
             })
@@ -73,7 +71,7 @@ const handleupload=async(e,item)=>{
       
 }
 
-return <section className="edit-jobs">
+return <Redirect><section className="edit-jobs">
     <HeaderEdit title="Jobs Edit" right_function={Add_new_job} />
     <ul className="p-5 edit-body">
         {jobs.map((item,index)=><li className="row  position-relative one-job gap-2 my-2" key={index}>
@@ -85,7 +83,7 @@ return <section className="edit-jobs">
             <div className="col-md">
             <label>Upload Job Image</label>
             <input type="file" name="image" value={item.name} onChange={(e)=>{
-                 imageref.current.src=URL.createObjectURL(e.target.files[0])
+               document.querySelector(`.jobimage${index}`).src=URL.createObjectURL(e.target.files[0])
                 eventhandler(e,index,item)
             }}/>
 
@@ -93,7 +91,7 @@ return <section className="edit-jobs">
             <div className="col-md">
             <label>Uploaded Image</label>
             <div style={{height:"100px",width:"100px"}}>
-               {item.image?<img ref={imageref} src={item.image?item.image:""} 
+               {item.image?<img ref={imageref} className={`jobimage${index}`} src={item.image?item.image:""} 
                 onError={(e)=>{
                     e.target.style.textIndent="-10000px"
                    }}
@@ -110,5 +108,5 @@ return <section className="edit-jobs">
     </ul>
 </section>
 
-
+</Redirect>
 }

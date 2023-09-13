@@ -1,5 +1,5 @@
 import connectMongoDB from "@/libs/mongodb";
-import Country from "@/models/country";
+import General from "@/models/general";
 
 import {
   movefile,
@@ -8,14 +8,13 @@ import {
   formread,
 } from "@/libs/node-functions/helper1";
 
-import auth from './auth'
-
 const fs = require("fs");
 const path = require("path");
 
-let working_dir = path.join(process.cwd() + "/public/media/country");
+const working_dir = path.join(process.cwd() + "/public/media/general");
 const connection = await connectMongoDB();
-const image_path=process.env.NEXT_PUBLIC_API_URL+"/api/image/country-"
+const image_path=process.env.NEXT_PUBLIC_API_URL+"/api/image/general-"
+
 
 export const config = {
   api: {
@@ -26,13 +25,11 @@ export const config = {
 export default async function handler(request, response) {
   let result, status, desc, message;
 
-  if(request.method==="POST"){
-    if(await auth(request)===null)return response.status(401).json("Unauthorized access")
-  }
+
 
   if (request.method === "GET") {
     try {
-      result = await Country.find();
+      result = await General.find();
       final_result = { res: result, status: 200 };
     } catch (e) {
       desc = e;
@@ -47,7 +44,7 @@ export default async function handler(request, response) {
   else if (request.method === "DELETE") {
     const { id } = request.query;
     try {
-      result = await Country.deleteOne({ _id: id });
+      result = await General.deleteOne({ _id: id });
       status = 200;
     } catch (e) {
       desc = e;
@@ -63,7 +60,6 @@ export default async function handler(request, response) {
   else if (request.method === "POST" ||request.method === "PUT") {
     const form = await formread(request);
 
-    console.log("----------------------------mona")
     //check if form parsed successfully
     if (form.err) {
       return response
@@ -71,18 +67,18 @@ export default async function handler(request, response) {
         .json({ message: "Form parsing failed", desc: err, res: {} });
     }
 
-    let formfile = form.files.Country;
-    let formdata = form.fields.Country;
+    let formfile = form.files.General;
+    let formdata = form.fields.General;
+
 
     if (!formdata) {
       return response
         .status(400)
-        .json({ message: "Country object missing", desc: form.err, res: {} });
+        .json({ message: "General object missing", desc: form.err, res: {} });
     }
     formdata = JSON.parse(formdata[0]);
 
     let newpath;
-    let newfilename
     if (formfile) {
       formfile = formfile[0];
 
@@ -92,9 +88,8 @@ export default async function handler(request, response) {
           .status(500)
           .json({ message: "directory creation failed", desc: dir, res: {} });
       let oldpath = formfile.filepath;
-      newfilename = formdata.Name + path.extname(formfile.originalFilename);
-      working_dir=process.cwd()
-      newpath = path.join(working_dir, "public",newfilename);
+      let newfilename = formdata.Name + path.extname(formfile.originalFilename);
+      newpath = path.join(working_dir, newfilename);
       const removedfile = removefile_if_exists(newpath);
       if (typeof removedfile !== "string")
         return response
@@ -105,7 +100,7 @@ export default async function handler(request, response) {
             res: {},
           });
       const movedfile = movefile(oldpath, newpath);
-      if (typeof movedfile !== "string")
+      if (typeof removedfile !== "string")
       return response
         .status(500)
         .json({
@@ -119,13 +114,13 @@ export default async function handler(request, response) {
     let dynamic_path;
 
     if (newpath && newfilename) {
-    //  let newpath_url = url.pathToFileURL(newpath).pathname;
-     // let cwd_url = url.pathToFileURL(process.cwd()).pathname;
+      // let newpath_url = url.pathToFileURL(newpath).pathname;
+      // let cwd_url = url.pathToFileURL(process.cwd()).pathname;
+      // dynamic_path =
+      //   process.env.NEXT_PUBLIC_API_URL +
+      //   newpath_url.split(cwd_url)[1].replace("/public", "");
       dynamic_path =
       image_path+newfilename
-        //newpath_url.split(cwd_url)[1].replace("/public", "");
-
-    
     }
 
     let data_to_database = { ...formdata };
@@ -134,8 +129,8 @@ export default async function handler(request, response) {
     try {
       result =
       !data_to_database._id
-          ? await Country.create(data_to_database)
-          : await Country.findOneAndUpdate(
+          ? await General.create(data_to_database)
+          : await General.findOneAndUpdate(
               { _id: data_to_database._id },
               { $set: data_to_database },
               {upsert:true, returnDocument: 'after' }
@@ -150,8 +145,8 @@ export default async function handler(request, response) {
       status = 404;
       message =
       !data_to_database._id
-          ? "Country Creation failed"
-          : "Country updation failed";
+          ? "General Creation failed"
+          : "General updation failed";
       desc = e;
     }
   }
