@@ -10,3 +10,6 @@
 .country-inside li{
 margin:10px 0px;
 }
+.country-inside textarea{
+    min-height: 100px;
+}
