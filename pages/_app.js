@@ -33,12 +33,15 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Loader from '@/Basic-components/loader'
 import Toast from '@/Basic-components/toast'
 
+import {SessionProvider} from 'next-auth/react'
+
 import Head from 'next/head'
 
+import binary_data from '../binary_file'
 
 const initialstate={
   general:{
-    "companyName":"",
+    "Name":"",
     "companyQuote":"",
     "companyDesc":"",
     "Instagram":"",
@@ -64,6 +67,7 @@ export default function App({ Component, pageProps,data }) {
 
   const [state,dispatch]=useReducer(reducer,initialstate)
 
+
   
   useEffect(()=>{
     import ("bootstrap/dist/js/bootstrap.min.js");
@@ -85,13 +89,13 @@ export default function App({ Component, pageProps,data }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/logo.jpg" />
       </Head>
-  
+  <SessionProvider >
   <Context.Provider value={{state,dispatch}}>
   {state?.loading && <Loader />}
   <Toast/>
-    <Component {...pageProps} />
-    
+  <Component {...pageProps} />    
     </Context.Provider> 
+    </SessionProvider>
     </>
 }
 
@@ -115,32 +119,38 @@ const reducer=(state,action)=>{
           }  
   case "DELETE_DATA":
           if(action.data.section==="jobs"){
-            debugger
             return {...state,jobs:state.jobs.filter(item=>item._id!==action.data._id)}
           }else if(action.data.section==="country"){
-            debugger
             return {...state,country:state.country.filter(item=>item._id!==action.data._id)}
           }else if(action.data.section==="snapshot"){
             return {...state,snapshot:state.snapshot.filter(item=>item._id!==action.data._id)}
           }
   case "UPDATE_DATA":
     if(action.data.section==="jobs"){
-      let particular_index=state.jobs.find(item=>item.id===action.data.item.id)
+      let particular_index=state.jobs.findIndex(item=>item._id===action.data.item._id)
+      let temp_index=state.jobs.findIndex(item=>item._id==="temp")
       let new_obj=state.jobs
-      new_obj[particular_index]=action.data.item
+      if(particular_index!==-1) new_obj[particular_index]=action.data.item
+      if(temp_index!==-1)new_obj[temp_index]=action.data.item
+     
       return {...state,jobs:new_obj}
     }else if(action.data.section==="country"){
 
-      let particular_index=state.country.find(item=>item.id===action.data.item.id)
+      let particular_index=state.country.find(item=>item._id===action.data.item._id)
+      let temp_index=state.jobs.findIndex(item=>item._id==="temp")
       let new_obj=state.country
-      new_obj[particular_index]=action.data.item
+      if(particular_index!==-1) new_obj[particular_index]=action.data.item
+      if(temp_index!==-1)new_obj[temp_index]=action.data.item
+
       return {...state,country:new_obj}
 
     }else if(action.data.section==="snapshot"){
 
-      let particular_index=state.snapshot.find(item=>item.id===action.data.item.id)
+      let particular_index=state.snapshot.find(item=>item._id===action.data.item._id)
+      let temp_index=state.jobs.findIndex(item=>item._id==="temp")
       let new_obj=state.snapshot
-      new_obj[particular_index]=action.data.item
+      if(particular_index!==-1) new_obj[particular_index]=action.data.item
+      if(temp_index!==-1)new_obj[temp_index]=action.data.item
 
       return {...state,snapshot:new_obj}
     }
@@ -157,7 +167,6 @@ const reducer=(state,action)=>{
 
 App.getInitialProps=async()=>{
   let data=await a();
-
   return {data};
 }
 

@@ -3,6 +3,7 @@ import {Context} from '../App'
 import {AiFillDelete} from 'react-icons/ai'
 import {FaSave} from 'react-icons/fa'
 import HeaderEdit from './headerEdit'
+import Redirect from './redirect'
 
 
 export default ()=>{
@@ -52,17 +53,17 @@ const handleupload=async(e,item)=>{
         const form=new FormData();
         form.append("Snapshot",JSON.stringify(item))
 
+
+        dispatch({type:"INSERT_DATA",data:{data:{...item,_id:"temp"},section:"snapshot"}})
         dispatch({type:"loading"})
         try{
             fetch('/api/edit/snapshot',{method:"POST",body:form}).then(res=>{
                if (res.status===200)return res.json()
-               throw new Error(res.json().message)
+               throw new Error(res.json())
             }).then(res=>{
-
-                if(!item._id)  dispatch({type:"INSERT_DATA",data:{data:res.res,section:"snapshot"}})
-                else dispatch({type:"UPDATE_DATA",data:{data:res.res,section:"snapshot",item}})
-                dispatch({type:"loading"})
-               dispatch({type:'toastgreen',data:"Data updated successfully"})
+              dispatch({type:"UPDATE_DATA",data:{data:res.res,section:"snapshot",item}})
+              dispatch({type:"loading"})
+              dispatch({type:'toastgreen',data:"Data updated successfully"})
             })
         }catch(e){
             dispatch({type:"loading"})
@@ -71,7 +72,7 @@ const handleupload=async(e,item)=>{
 }
 
  console.log(snapshot)
-    return <section className="impact-edit edit-body pt-4">
+    return <Redirect><section className="impact-edit edit-body pt-4">
         <HeaderEdit title="Snapshot Edit" right_function={Add_new_snapshot} />
         <ul className="p-5 d-flex flex-column gap-2">
         {
@@ -109,4 +110,5 @@ const handleupload=async(e,item)=>{
         }
     </ul>
     </section>
+    </Redirect>
 }

@@ -5,9 +5,14 @@ import {AiFillDelete} from 'react-icons/ai'
 import {FaSave} from 'react-icons/fa'
 import HeaderEdit from './headerEdit'
 
+import { useSession } from 'next-auth/react'
+import Router from 'next/router'
+import Redirect from './redirect'
 
 
-export default ()=>{
+
+export  default ()=>{
+
     const {state,dispatch}=useContext(Context)
     const[country,setCountry]=useState(state.country)
     const imageref=useRef()
@@ -70,16 +75,15 @@ export default ()=>{
         form.append("Country",JSON.stringify(item))
         if (item["imagedata"])form.append("Country",item["imagedata"])
 
+        if(!item._id) dispatch({type:"INSERT_DATA",data:{data:{...item,_id:"temp"},section:"country"}})
         dispatch({type:"loading"})
         try{
             fetch('/api/edit/country',{method:"POST",body:form}).then(res=>{
                if (res.status===200)return res.json()
-                else throw new Error(res.json())
+               throw new Error(res.json().message)
             }).then(res=>{
-                
-              if(!item._id) dispatch({type:"INSERT_DATA",data:{data:res.res,section:"country"}})
-              else dispatch({type:"UPDATE_DATA",data:{data:res.res,section:"country",item}})
               
+               dispatch({type:"UPDATE_DATA",data:{data:res.res,section:"country",item}})
                dispatch({type:"loading"})
                dispatch({type:'toastgreen',data:"Data updated successfully"})
             })
@@ -90,7 +94,10 @@ export default ()=>{
    
     }
 
-    return <section className="country-edit-section edit-body">
+    
+
+    return <Redirect>
+    <section className="country-edit-section edit-body">
         <HeaderEdit title="Country Edit" right_function={Add_new_country} />
         
     <ul className="p-5 mt-2">
@@ -106,7 +113,7 @@ export default ()=>{
                         <div className="col-6">
                             <label>Upload new Image: </label>
                             <input type="file" name="image" onChange={(e)=>{
-                                imageref.current.src=URL.createObjectURL(e.target.files[0])
+                                    const ele=document.querySelector(`.countryimage${index}`)                    
                                 eventhandler(e,index)
                                 }}></input>
                         </div>
@@ -120,12 +127,13 @@ export default ()=>{
                         <div className="col-6">
                             <label>Uploaded Image: </label>
                             <div style={{height:"100px",width:"100px"}}>
-                               {item.image ? <img ref={imageref} 
+                               <img ref={imageref} 
                                onError={(e)=>{
                                 e.target.style.textIndent="-10000px"
                                }}
+                               className={`countryimage${index}`}
                                 style={{height:"100%",width:"100%",objectFit:"contain"}}
-                                 name="image" src={item.image} alt="" />:"Upload new image"}                              
+                                 name="image" src={item.image} alt="" />                              
                             </div>
                         </div>
                     </li>
@@ -143,4 +151,5 @@ export default ()=>{
        </li>  )}
     </ul>
     </section>
+    </Redirect>
 }

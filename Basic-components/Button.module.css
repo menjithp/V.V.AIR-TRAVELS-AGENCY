@@ -1,0 +1,15 @@
+.customButton{
+    display: block;
+    margin: auto;
+    margin-top:1rem;
+    border:2px solid transparent;
+    outline:none;
+    padding:0.4rem 1rem;
+    transition: border 200ms;
+     color:var(--violet-color);
+     font-weight: 700;;
+     border-radius: 5px;
+}
+.customButton:hover{
+   border: 2px solid var(--violet-color);
+}

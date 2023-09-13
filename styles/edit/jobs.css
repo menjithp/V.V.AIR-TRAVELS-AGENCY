@@ -5,7 +5,9 @@ padding:10px;
 .one-job{
     border:1px solid var(--violet-color)
 }
-
+.edit-jobs{
+    margin-top:20px
+}
 @media screen and (max-width:768px) {
    
     .edit-jobs{

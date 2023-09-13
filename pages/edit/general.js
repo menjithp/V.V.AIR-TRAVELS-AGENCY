@@ -2,58 +2,33 @@ import {useContext,useState,useRef,useEffect} from 'react'
 import {Context} from '../App'
 
 import HeaderEdit from './headerEdit'
+import Redirect from './redirect'
 export default (props)=>{
 
-// const [state,setState]=useState("")
 
 const {state,dispatch}=useContext(Context)
- let res=state.general
+const [general,setgeneral]=useState(null)
+const [file,setfile]=useState(null)
 
- 
-    const Name=useRef();
-    const companyQuote=useRef();
-    const companyDesc=useRef();
-    const Instagram=useRef();
-    const Facebook=useRef();
-    const LinkedIn=useRef();
-    const Whatsapp=useRef();
-    const Mobile=useRef();
-    const Address=useRef();
-    const AgentName=useRef();
-    const mapName=useRef();
-    const imageref=useRef()
+console.log("state.general",state.general)
 
     useEffect(()=>{
-        Name.current.value=res.Name
-        companyQuote.current.value=res.companyQuote
-        companyDesc.current.value=res.companyDesc
-        Instagram.current.value=res.Instagram
-        Facebook.current.value=res.Facebook
-        LinkedIn.current.value=res.LinkedIn
-        Whatsapp.current.value=res.Whatsapp
-        Mobile.current.value=res.Mobile
-        Address.current.value=res.Address
-        AgentName.current.value=res.AgentName
-      //  mapName.current.value=res.mapName
-    },[res])
+        setgeneral(state.general)
+    },[state.general])
 
     const upload=(e)=>{
         e.preventDefault();
-        let obj={... res,
-            [Name.current.name]:Name.current.value,
-            [companyQuote.current.name]:companyQuote.current.value,
-            [companyDesc.current.name]:companyDesc.current.value,
-            [Instagram.current.name]:Instagram.current.value,
-            [Facebook.current.name]:Facebook.current.value,
-            [LinkedIn.current.name]:LinkedIn.current.value,
-            [Whatsapp.current.name]:Whatsapp.current.value,
-            [Mobile.current.name]:Mobile.current.value,
-            [Address.current.name]:Address.current.value,
-            [AgentName.current.name]:AgentName.current.value,
-        }
+      
         let form=new FormData()
-        form.append("General",JSON.stringify(obj))
-        if (mapName.current.files)form.append("General",mapName.current.files[0])
+        form.append("General",JSON.stringify(general))
+
+
+        
+        if (file)form.append("General",file)
+
+
+
+
         
         dispatch({type:"loading"})
         try{
@@ -72,63 +47,81 @@ const {state,dispatch}=useContext(Context)
         
     }
 
-return <form className="px-5 pb-5 mx-2 general-details-edit edit-body" onSubmit={upload}>
+    const eventhandler=(e)=>{
+        let obj={...general}
+
+        console.log("obj",obj)
+
+
+        if(e.target.name==="image"){
+            setfile(e.target.files[0])
+            obj[e.target.name]=URL.createObjectURL(e.target.files[0])
+        }
+        else obj[e.target.name]=e.target.value
+      
+        setgeneral(obj)
+        
+}
+
+return <Redirect>
+<form className="px-5 pb-5 mx-2 general-details-edit edit-body" onSubmit={upload}>
     <HeaderEdit title="General Edit" />
     <div className="row align-items-center my-3">
         <label className="col-md-3">Company Name: </label>
-        <input className="col-md-9" required type="text" name="Name" ref={Name} />
+        <input className="col-md-9" required type="text" name="Name" value={general?.Name} onChange={eventhandler} />
     </div>
     <div className="row my-3">
         <label className="col-md-3">Company Quote: </label>
-        <input className="col-md-9" required type="text" name="companyQuote" ref={companyQuote} />
+        <input className="col-md-9" required type="text" name="companyQuote" value={general?.companyQuote} onChange={eventhandler} />
     </div>
     <div className="row  my-2">
         <label className="col-md-3">Company Description: </label>
-        <input  className="col-md-9" required type="text" name="companyDesc" ref={companyDesc} />
+        <input  className="col-md-9" required type="text" name="companyDesc" value={general?.companyDesc} onChange={eventhandler} />
     </div>
     <div className="row  my-2">
         <label className="col-md-3">Instagram: </label>
-        <input className="col-md-9" type="text" name="Instagram" ref={Instagram} />
+        <input className="col-md-9" type="text" name="Instagram" value={general?.Instagram} onChange={eventhandler} />
     </div>
     <div className="row  my-2">
         <label className="col-md-3">Facebook: </label>
-        <input className="col-md-9" type="text" name="Facebook" ref={Facebook} />
+        <input className="col-md-9" type="text" name="Facebook" value={general?.Facebook} onChange={eventhandler} />
     </div>
     <div className="row  my-2">
         <label className="col-md-3">LinkedIn: </label>
-        <input className="col-md-9" type="text" name="LinkedIn" ref={LinkedIn} />
+        <input className="col-md-9" type="text" name="LinkedIn" value={general?.LinkedIn} onChange={eventhandler} />
     </div>
     <div className="row  my-2">
         <label className="col-md-3">Whatsapp: </label>
-        <input className="col-md-9"  type="text" name="Whatsapp" ref={Whatsapp} />
+        <input className="col-md-9"  type="text" name="Whatsapp" value={general?.Whatsapp}  onChange={eventhandler} />
     </div>
     <div className="row  my-2">
         <label className="col-md-3">Mobile: </label>
-        <input className="col-md-9" type="text" name="Mobile" ref={Mobile} />
+        <input className="col-md-9" type="text" name="Mobile"  value={general?.Mobile} onChange={eventhandler} />
     </div>
     <div className="row  my-2">
         <label className="col-md-3">Company Address: </label>
-        <textarea className="col-md-9" rows={4} type="address" name="Address" ref={Address} />
+        <textarea className="col-md-9" rows={4} type="address" name="Address" value={general?.Address} onChange={eventhandler} />
     </div>
     <div className="row  my-2">
         <label className="col-md-3">AgentName: </label>
-        <input className="col-md-9" type="text" name="AgentName" ref={AgentName} />
+        <input className="col-md-9" type="text" name="AgentName" value={general?.AgentName} onChange={eventhandler} />
     </div>
     <div className="row  my-2">
         <label className="col-md-3">Upload new Map Image: </label>
-        <input className="ps-0 col-md-9" type="file" name="image" ref={mapName} onChange={(e)=>{
-            imageref.current.src=URL.createObjectURL(e.target.files[0])
+        <input className="ps-0 col-md-9" type="file" name="image" onChange={(e)=>{
+            document.querySelector(`.general_image`).src=URL.createObjectURL(e.target.files[0])
+            eventhandler(e)
         }}/>
     </div >
     <div className="row  align-items-center my-2">
         <label className="col-md-3">Uploaded Map Image: </label>
         <div className="col-md-9" style={{height:"100px",width:"100px"}}>
-            {res.image?<img src={res.image} ref={imageref}
+            {general? (general.image&&<img src={general.image} className={`general_image`}
              onError={(e)=>{
                 e.target.style.textIndent="-10000px"
                }}
              style={{width:"100%",width:"100%",objectFit:"cover"}} 
-             alt="" />:"Upload new image"}
+             alt="" />):"Upload new image"}
         </div>
     </div>
     
@@ -137,7 +130,7 @@ return <form className="px-5 pb-5 mx-2 general-details-edit edit-body" onSubmit=
     </div>
 
 </form>
-
+</Redirect>
 
 
 }
