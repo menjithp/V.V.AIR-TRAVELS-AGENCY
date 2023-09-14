@@ -20,7 +20,7 @@ export default ()=>{
       target="_blank"
       rel="noopener noreferrer"
     >
-      <img src={googleMapsImageURL} alt="Google Maps" style={{width:"100%",height:"200px",objectFit:"contain"}} />
+      <img src={`/api/image/general?_id=${newstate._id}`} alt="Google Maps" style={{width:"100%",height:"200px",objectFit:"contain"}} />
     </a>
   );
 }
