@@ -1,8 +1,8 @@
 import connectMongoDB from "@/libs/mongodb";
 import Country from "@/models/country";
-import Jobs from "@/models/Jobs";
-import General from "@/models/General";
-import Test from "@/models/Test";
+import Jobs from "@/models/jobs";
+import General from "@/models/general";
+import Test from "@/models/test";
 
 
 
