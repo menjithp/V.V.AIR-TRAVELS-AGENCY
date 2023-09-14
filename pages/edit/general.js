@@ -59,10 +59,13 @@ console.log("state.general",state.general)
         }
         else obj[e.target.name]=e.target.value
       
-        setgeneral(obj)
-        
+        // setgeneral(obj)
+        dispatch({type:"SET_GENERAL_DATA",data:obj})
+
 }
 
+
+console.log("general",general)
 return <Redirect>
 <form className="px-5 pb-5 mx-2 general-details-edit edit-body" onSubmit={upload}>
     <HeaderEdit title="General Edit" />
@@ -109,19 +112,18 @@ return <Redirect>
     <div className="row  my-2">
         <label className="col-md-3">Upload new Map Image: </label>
         <input className="ps-0 col-md-9" type="file" name="image" onChange={(e)=>{
-            document.querySelector(`.general_image`).src=URL.createObjectURL(e.target.files[0])
             eventhandler(e)
         }}/>
     </div >
     <div className="row  align-items-center my-2">
         <label className="col-md-3">Uploaded Map Image: </label>
         <div className="col-md-9" style={{height:"100px",width:"100px"}}>
-            {general? (general.image&&<img src={general.image} className={`general_image`}
+           {general &&<img src={general.image?general.image:`/api/image/general?_id=${general._id}`} className={`general_image`}
              onError={(e)=>{
                 e.target.style.textIndent="-10000px"
                }}
              style={{width:"100%",width:"100%",objectFit:"cover"}} 
-             alt="" />):"Upload new image"}
+             alt="" />}
         </div>
     </div>
     

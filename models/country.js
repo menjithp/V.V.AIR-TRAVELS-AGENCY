@@ -1,10 +1,14 @@
 import mongoose, { Schema } from "mongoose";
 
 const CountrySchema = new Schema(
-  {
+  { 
     Name: String,
-    image: String,
-    Comments:Array
+    Comments:Array,
+    image: 
+    {
+        data: Buffer,
+        contentType: String
+    },
   },
   {
     timestamps: true,

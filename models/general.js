@@ -12,8 +12,11 @@ Whatsapp:String,
 Mobile:String,
 Address:String,
 AgentName:String,
-image:String,
-},
+image: 
+{
+    data: Buffer,
+    contentType: String
+}},
   {
     timestamps: true,
   }

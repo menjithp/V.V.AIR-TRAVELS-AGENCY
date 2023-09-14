@@ -1,7 +1,6 @@
 import connectMongoDB from "@/libs/mongodb";
 import Country from "@/models/country";
-import Test from "@/models/test";
-import { formread,toBase64} from "@/libs/node-functions/helper1";
+import { formread,toBase64,toBuffer} from "@/libs/node-functions/helper1";
 
 import auth from './auth'
 
@@ -23,7 +22,7 @@ export default async function handler(request, response) {
 
   if (request.method === "GET") {
     try {
-      result = await Country.find();
+      result = await Country.find({},{image:0});
       status=200
     } catch (e) {
       desc = e;
@@ -69,18 +68,22 @@ export default async function handler(request, response) {
         .status(400)
         .json({ message: "Country object missing", desc: form.err, res: {} });
     }
-    let base64;
-    let buffer;
+   
     formdata = JSON.parse(formdata[0]);
+    let data_to_database = { ...formdata };
+
     if (formfile) {
         formfile=formfile[0]
-      if(formfile) base64 = "data:"+formfile.mimetype+";base64,"+toBase64(formfile.filepath)
-      
+      if(formfile){
+        data_to_database.image={
+          data:toBuffer(formfile.filepath),
+          contentType:formfile.mimetype
+        }
+      }
     }
-    let data_to_database = { ...formdata };
-   if (base64) data_to_database.image = base64;
    
-    
+
+
     try {
       result =
       !data_to_database._id
@@ -96,6 +99,9 @@ export default async function handler(request, response) {
             }
       status = 200;
 
+      result=JSON.parse(JSON.stringify(result))
+      result.image=null
+
     } catch (e) {
       status = 404;
       message =
@@ -103,12 +109,11 @@ export default async function handler(request, response) {
           ? "Country Creation failed"
           : "Country updation failed";
       desc = e;
+   
+   
+   
     }
   }
-
-
-
-  
 
   return response.status(status).json({ message: "", desc: {}, res: result });
 }

@@ -27,6 +27,9 @@ const eventhandler=(e,item,index)=>{
     let obj=[...snapshot]
     obj[index][e.target.name]=e.target.value
     setsnapshot(obj)
+
+    dispatch({type:"SET_SNAPSHOT_DATA",data:obj})
+
 }
 const handledelete=async(e,item)=>{
         if(item._id){

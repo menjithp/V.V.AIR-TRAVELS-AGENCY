@@ -1,15 +1,19 @@
 import mongoose, { Schema } from "mongoose";
 
-const CountrySchema = new Schema(
+const JobsSchema = new Schema(
   {
     Name: String,
-    image: String,
+    image: 
+{
+    data: Buffer,
+    contentType: String
+},
   },
   {
     timestamps: true,
   }
 );
 
-const Country = mongoose.models.Jobs || mongoose.model("Jobs", CountrySchema);
+const Jobs = mongoose.models.Jobs || mongoose.model("Jobs", JobsSchema);
 
-export default Country;
+export default Jobs;

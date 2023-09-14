@@ -3,7 +3,7 @@ import Jobs from "@/models/jobs";
 
 import {
   toBase64,
-  formread,
+  formread,toBuffer
 } from "@/libs/node-functions/helper1";
 import auth from './auth'
 
@@ -26,7 +26,7 @@ export default async function handler(request, response) {
 
   if (request.method === "GET") {
     try {
-      result = await Jobs.find();
+      result = await Jobs.find({},{image:0});
       final_result = { res: result, status: 200 };
     } catch (e) {
       desc = e;
@@ -55,6 +55,7 @@ export default async function handler(request, response) {
   
   
   
+     
   else if (request.method === "POST" ||request.method === "PUT") {
     const form = await formread(request);
 
@@ -73,17 +74,22 @@ export default async function handler(request, response) {
         .status(400)
         .json({ message: "Jobs object missing", desc: form.err, res: {} });
     }
-    let base64;
+   
     formdata = JSON.parse(formdata[0]);
+    let data_to_database = { ...formdata };
+
     if (formfile) {
         formfile=formfile[0]
-      if(formfile) base64 = "data:"+formfile.mimetype+";base64,"+toBase64(formfile.filepath)
-      
+      if(formfile){
+        data_to_database.image={
+          data:toBuffer(formfile.filepath),
+          contentType:formfile.mimetype
+        }
+      }
     }
-    let data_to_database = { ...formdata };
-   if (base64) data_to_database.image = base64;
    
-    
+
+console.log("buffer",data_to_database)
     try {
       result =
       !data_to_database._id
@@ -97,16 +103,21 @@ export default async function handler(request, response) {
             if(!result._id){
                 return response.status(404).json({res:{},message:"Data failed to upload",desc:{}})
             }
-
       status = 200;
+
+      result=JSON.parse(JSON.stringify(result))
+     // result.image=null
 
     } catch (e) {
       status = 404;
       message =
       !data_to_database._id
-          ? "Job Creation failed"
-          : "Job Updation failed";
+          ? "Jobs Creation failed"
+          : "Jobs updation failed";
       desc = e;
+   
+   
+   
     }
   }
 

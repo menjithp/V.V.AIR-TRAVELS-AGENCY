@@ -69,6 +69,7 @@ export async function formread(request){
     const buffer = fs.readFileSync(filePath,(err)=>{
       throw new Error(err)
     });  
+
     return buffer
   }catch(e){
     return e

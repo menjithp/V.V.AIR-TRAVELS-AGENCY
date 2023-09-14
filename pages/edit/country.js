@@ -9,7 +9,7 @@ import { useSession } from 'next-auth/react'
 import Router from 'next/router'
 import Redirect from './redirect'
 
-
+import uapp from '../../Basic-components/uniqueid'
 
 
 
@@ -37,6 +37,8 @@ export  default ()=>{
             else obj[index][e.target.name]=e.target.value
           
             setCountry(obj)
+
+            dispatch({type:"SET_COUNTRY_DATA",data:obj})
             
     }
     const handledelete=async(e,item)=>{
@@ -139,7 +141,7 @@ export  default ()=>{
                                }}
                                className={`countryimage${index}`}
                                 style={{height:"100%",width:"100%",objectFit:"contain"}}
-                                 name="image" src={item.image} alt="" />                              
+                                 name="image" src={item.image?item.image:`/api/image/country?_id=${item._id}`} alt="" />                              
                             </div>
                         </div>
                     </li>

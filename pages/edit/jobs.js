@@ -28,6 +28,8 @@ const eventhandler=(e,index,item)=>{
     }else  obj[index][e.target.name]=e.target.value
 
     setjobs(obj)
+
+    dispatch({type:"SET_JOBS_DATA",data:obj})
 }
 const handledelete=async(e,item)=>{
     e.preventDefault()
@@ -102,7 +104,7 @@ return <Redirect><section className="edit-jobs">
             <div className="col-md">
             <label>Uploaded Image</label>
             <div style={{height:"100px",width:"100px"}}>
-               <img ref={imageref} className={`jobimage${index}`} src={item.image} 
+               <img ref={imageref} className={`jobimage${index}`} src={item.image?item.image:`/api/image/jobs?_id=${item._id}`} 
                 onError={(e)=>{
                     e.target.style.textIndent="-10000px"
                    }}

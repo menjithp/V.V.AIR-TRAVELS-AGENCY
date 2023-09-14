@@ -37,7 +37,7 @@ import {SessionProvider} from 'next-auth/react'
 
 import Head from 'next/head'
 
-import uid from '../Basic-components/uniqueId'
+import uid from '../Basic-components/uniqueid'
 
 const initialstate={
   general:{
@@ -62,6 +62,9 @@ const initialstate={
 }
 import {Context} from './App'
 import { useEffect,useId,useReducer } from 'react'
+
+
+import base64 from '../binary_file'
 
 export default function App({ Component, pageProps,data }) {
 
@@ -93,6 +96,7 @@ export default function App({ Component, pageProps,data }) {
   <Context.Provider value={{state,dispatch}}>
   {state?.loading && <Loader />}
   <Toast/>
+  {/* <img src={"http://localhost:3000/api/image/test?_id=6502d591252277e14c50ed56"}/> */}
   <Component {...pageProps} />    
     </Context.Provider> 
     </SessionProvider>
@@ -105,7 +109,14 @@ const reducer=(state,action)=>{
   case "INITIAL_STATE":
     return {...state,...action.data}
   case "SET_GENERAL_DATA":
+    console.log("------------",action.data)
     return {...state,general:action.data}
+    case "SET_JOB_DATA":
+    return {...state,jobs:action.data}
+    case "SET_COUNTRY_DATA":
+    return {...state,country:action.data}
+    case "SET_SNAPSHOT_DATA":
+      return {...state,snapshot:action.data}
   case "INSERT_DATA":
     debugger
           if(action.section==="jobs"){
@@ -186,6 +197,9 @@ const reducer=(state,action)=>{
 
 App.getInitialProps=async()=>{
   let data=await a();
+
+
+  console.log("dataaaaaaaaaaaaaaa",data)
   return {data};
 }
 
