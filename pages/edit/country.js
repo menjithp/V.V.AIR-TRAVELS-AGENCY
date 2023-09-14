@@ -9,7 +9,7 @@ import { useSession } from 'next-auth/react'
 import Router from 'next/router'
 import Redirect from './redirect'
 
-import uapp from '../../Basic-components/uniqueid'
+
 
 
 
