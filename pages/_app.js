@@ -37,7 +37,7 @@ import {SessionProvider} from 'next-auth/react'
 
 import Head from 'next/head'
 
-import uid from '../Basic-components/uniqueid'
+import uid from '../Basic-components/uniqueId'
 
 const initialstate={
   general:{
